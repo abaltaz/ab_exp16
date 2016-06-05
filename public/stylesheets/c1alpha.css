@@ -1,0 +1,286 @@
+html {
+  margin: 0;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+  margin: 0;
+}
+
+body {
+  font-family: Open Sans;
+  font-weight: 300;
+  color: #444;
+  padding: 0 10px;
+  height: 100%;
+}
+
+.content-wrapper {
+	margin-bottom: -150px;
+	min-height: 100%;
+}
+
+.header {
+  font-family: Roboto Slab;
+  border-bottom: 1px solid #e1e1e1;
+  padding: 0 0 10px 5px;
+  width: 100%;
+  max-width: 500px;
+  display: block;
+  position: relative;
+  margin: 8px auto 40px;
+  color: #999;
+}
+
+
+h1 {
+  display: inline-block;
+  font-weight: 100;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle
+}
+
+
+.current-weather {
+  display: inline-block;
+  position: absolute;
+  right: 5px;
+  top: 16px;
+}
+
+p {
+  margin: 0.3em 0
+}
+
+b {
+  font-weight: 400;
+}
+
+.all-clear {
+  text-align: center;
+  margin: 0 0 40px 0;
+}
+
+.all-clear i {
+  font-size: 60px;
+  color: green;
+  margin: 0 0 10px;
+}
+
+.all-clear .details {
+  font-size: 24px;
+  color: #666;
+}
+
+.all-clear .msg{
+  font-size:18px;
+}
+
+.updates {
+  max-width: 400px;
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  list-style: none;
+  padding: 0;
+}
+
+.updates li {
+  font-size: 18px;
+  margin: 15px 0 50px;
+}
+
+
+
+.updates li:before {
+}
+
+.updates li {
+  color: #666
+}
+
+.updates .icon {
+  //margin: 8px 0 0 0;
+  color: #666;
+  margin: 0 0 5px 0;
+}
+
+
+.updates .title {
+  margin: 0 0 0px 0;
+}
+
+.updates .msg {
+}
+
+.updates li .title:before {
+  font-size: 24px;
+  
+}
+
+.weather-alert .title:before {
+	content: "Weather Alert";
+}
+
+.weather-alert .icon:before {
+  content: "\f06a";
+  font-family: FontAwesome;
+  font-size: 36px;
+  color: #E65252;
+}
+
+.rain .icon:before {
+  content: "\f043";
+  font-family: FontAwesome;
+  font-size: 40px;
+}
+
+.rain .title:before {
+  content: "Rain";
+}
+
+.cubs .icon:before {
+  content: "a";
+  font-family: C1;
+  font-size: 35px;
+}
+
+.cubs .title:before {
+  content: "Cubs";
+}
+
+
+.sox .icon:before {
+  content: "White Sox";
+  font-weight: 600
+
+}
+
+.sox .title:before {
+  content: "Sox";
+}
+
+
+.transit .icon:before {
+    content: "b";
+    font-family: C1;
+	font-size: 36px;
+}
+
+
+.special .icon:before {
+	background-image: url("http://img.relax.ru/88317/9506715671966128_4d299cc8.jpg");
+    background-size: 10px 20px;
+    display: inline-block;
+    width: 10px; 
+    height: 20px;
+    content:"";
+}
+
+.blue-line .title:before {
+  content: "Blue Line";
+}
+
+.red-line .title:before {
+  content: "Red Line";
+}
+
+.cubs .icon {
+  margin-top: 3px
+}
+
+.custom-update .title:before {
+	content: attr(data-title);
+}
+
+.custom-update .icon:before {
+    content: attr(data-icons);
+    font-family: 'FontAwesome';
+	font-size: 36px;
+}
+
+
+.push-footers {
+	height: 150px;
+}
+
+.hide-button {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    height: 50px;
+    border: 1px solid #ccc;
+	color: #777;
+    font-size: 14px;
+    padding: 5px 20px;
+    text-align: center;
+    border-radius: 3px;
+}
+
+.hide-button:before {
+	content: "Hide categories you don't need";
+	text-align: center;
+}
+
+.footer {
+  font-family: Open Sans;
+  width: 100%;
+  margin: 150px 0 0px;
+  border-top: 1px solid #eee;
+  color: #999;
+  padding: 15px 15px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #eee
+}
+
+.footer .about {
+  width: 100%;
+  max-width: 600px;
+  display: block;
+  margin: auto;
+  font-size: 14px;
+}
+
+.modal {
+	display: none;
+}
+
+.modal .background{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background-color: #000;
+	opacity: 0.5;
+	top: 0px;
+	left: 0px;
+}
+
+.modal .inner{
+	color: #fff;
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	width: 300px;
+	height: 460px;
+	background-color: #444;
+	top: 0px;
+	bottom: 0px;
+	display:block;
+	margin:auto;
+	opacity: 1;
+	border-radius: 5px;
+	padding: 15px;
+	overflow: auto;
+}
+
+@media (max-width: 420px) {
+  .weather {
+    top: 18px;
+  }
+}

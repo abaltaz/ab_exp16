@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='/stylesheets/index-white.css' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,100' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,700,100' rel='stylesheet' type='text/css'>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script id="dsq-count-scr" src="//chi1.disqus.com/count.js" async></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Chicago 1 - Chicago as it happens</title>
+  
+ <style>
+ 	#date::before {
+		content: "Now <%= forecast.tempNow %>° \f0c2  • <%= forecast.conditionHour %> • High <%= forecast.tempHigh %>°";
+ 	}
+ </style>
+  
+</head>
+<body>
+	
+  <div id="nav">
+	  <ul>
+		  <li class="n-updates"><i class="fa fa-bars" aria-hidden="true"></i></li>
+		  <li class="n-comments"><i class="fa fa-comment" aria-hidden="true"></i></li>
+	  </ul>
+  </div>
+  
+  <div id="bg-opacity"></div>
+  <div id="bg-image"></div>
+
+
+  <div id="masthead">
+  
+    <h1>chicago <span style="font-size: 28px">1</span></h1>
+
+    <div id="date">
+        
+    </div>
+    
+  </div>
+  
+  <div id="container">
+          
+    
+    <div id="module-updates" class="module">
+      <!--<h2>Updates</h2>-->
+      <ul class="details">
+        
+			
+			<% for (var i=0; i<updates.length; i++){ %>
+				
+				<li class="card">
+					<div class="card-content <%= updates[i].layout %>">
+						<div class="content-box ]">
+							<%- updates[i].updates %>
+						</div>
+						<% if (updates[i].image != "") { %>
+							<div class="content-img">
+								<img src="<%- updates[i].image %>" />
+							</div>
+						<% } %>
+					</div>
+					<div class="meta">
+						<% if (updates[i].timestamp != "") { %>
+							<div class="timestamp"><%- updates[i].timestamp %></div>
+						<% } %>	
+						<% if (updates[i].source != "") { %>
+							<div class="source"><%- updates[i].source %></div>
+						<% } %>
+						Layout: <%- updates[i].layout %>
+					</div>
+				</li>
+				
+	
+			<% } %>
+			
+			
+			<% for (var i=0; i < fbasePosts.length; i++){ %> 
+			
+				<%= fbasePosts[i].update %>
+			
+			<% } %>
+				
+				
+				
+			
+		
+      </ul>
+    </div>
+	
+<!--	
+
+<%- settings[0].updatenow  %>
+<%- settings[0].date  %>
+-->
+	
+<div id="disqus_thread"></div>
+	  
+<div class="credits">
+	<h2>Credits for April 20, 2016</h2>
+	<ul>
+		<li>Wallpaper by Nicole Baltazar</li>
+		<li>Updates by Finn Baltazar</li>
+		<li>Site by Andrew Baltazar</li>
+	</ul>
+</div>
+  
+  <script>
+  	setTimeout(function() {
+  		$("#date.showtemp").css({"top": "-21px"});
+  	},2000)
+	
+  </script>
+	
+	<script>
+		/**
+		* RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+		* LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+		*/
+		/*
+		var disqus_config = function () {
+		this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+		this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+		};
+		*/
+		(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+
+		s.src = '//chi1.disqus.com/embed.js';
+
+		s.setAttribute('data-timestamp', +new Date());
+		(d.head || d.body).appendChild(s);
+		})();
+	</script>
+		
+	<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
+</body>
+</html>

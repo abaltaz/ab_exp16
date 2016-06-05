@@ -1,0 +1,196 @@
+html {
+  font-family: 'Open Sans'
+}
+
+body {
+	background-color: #FBFBFB;
+	color: #424242;
+	margin: 0;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+
+h1 {
+	font-family: 'Arvo';
+	font-size: 24px;
+	margin: 10px 10px 15px;
+	display:inline-block;
+	vertical-align: middle;
+}
+
+#site-header {
+	background-color: #fff;
+}
+
+.site-nav {
+	display:inline-block;
+	vertical-align: top-middle;
+}
+
+.site-nav li{
+	display:inline-block;
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+h2 {
+  font-size: 16px;
+  margin: 10px
+}
+
+h2 i {
+	margin: 0 5px 0 0;
+}
+
+#column-container {
+  display: flex;
+  margin: 10px 0 0 0;
+}
+
+.column {
+  min-width: 130px;
+  margin: 10px;
+  flex-grow: 1;
+  padding: 5px;
+  background-color: #eee;
+  height:100%;
+  border: 1px solid #E4E4E4;
+}
+
+.cards {
+	list-style: none;
+	padding: 0;
+}
+
+.card {
+	border: 1px solid #D0CECE;
+	width: 95%;
+	margin: 10px auto;
+	background-color: #fff;
+	padding: 10px;
+	position: relative;
+	border-radius: 3px;
+	font-size: 14px;
+}
+
+
+
+.title {
+  margin: 5px 0 10px;
+}
+
+
+.label {
+	line-height: 12px;
+	text-align: center;
+	padding: 3px 10px;
+	text-transform: uppercase;
+	font-size: 10px;
+	color: #fff;
+	display: inline-block;
+	margin: 0 5px 1px 0;
+}
+
+.label.must {
+  background-color: #CC3B3B;
+}
+
+.label.must:before {
+  content: "Must"
+}
+
+.label.should {
+  background-color: #CE8A41;
+}
+
+.label.should:before {
+  content: "Should"
+}
+
+.label.could {
+  background-color: #C7B523;
+}
+
+.label.could:before {
+  content: "Could"
+}
+
+.label.would {
+  border: 1px solid #eee;
+}
+
+.label.would:before {
+  content: "Would";
+  color: #424242;
+}
+
+.label.assigned {
+  color: #5D5B5B;
+  border: 1px solid #BFBBBB;
+}
+
+.label.assigned:before {
+  content: "Assigned"
+}
+
+.label.code-review {
+	color: #5D5B5B;
+	border: 1px solid #BFBBBB;
+}
+
+.label.code-review:before {
+  content: "Code Review"
+}
+
+
+.label.qat {
+    color: #5D5B5B;
+    border: 1px solid #BFBBBB;
+}
+
+.label.qat:before {
+  content: "QA Testing"
+}
+
+.label.ready-for-production {
+  background-color: green;
+}
+
+.label.ready-for-production:before {
+  content: "Ready for production"
+}
+
+.label.ready-for-prod {
+  background-color: green;
+}
+
+.label.ready-for-prod:before {
+  content: "Ready for production"
+}
+
+.storypoints {
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  background-color: #92F992;
+  height: 25px;
+  width: 25px;
+  color: #777;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 50%;
+  font-size: 10px;
+}
+
+.storypoints:before {
+  content: attr(data-storypoints);
+}
+
+@media screen and (max-width: 767px) {
+    #column-container {
+    	flex-wrap: wrap;
+    }
+}

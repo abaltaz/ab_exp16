@@ -1,0 +1,282 @@
+body {
+  margin: 0px;
+  font-family: Roboto Slab;
+  background-color: #fff;
+  color: #333;
+}
+
+
+/*
+#bg-image {
+  background: url('<%- settings[0].backgroundimage  %>')  no-repeat center center fixed;
+  background-size: cover;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: -2;
+-webkit-filter: blur(3px);
+}
+
+#bg-opacity {
+  background-size: cover;
+  background: linear-gradient(rgba(0,0,0,0.4) 0%,rgba(0,0,0,.6) 30%,rgba(0,0,0,.8) 100%);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+}
+
+*/
+
+#masthead {
+	margin: 0 0 30px;
+    background-color: #FDFDFD;
+    border-bottom: 1px solid #F9F3F3;
+	height: 50px;
+}
+
+h1 {
+  text-align:center;
+  font-weight: 400;
+  padding: 0 0 0 0;
+  margin: 0 0 0 10px;
+  font-family: Roboto Slab;
+  font-size: 30px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 50px;
+  color: #555;
+  font-weight: 100;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 14px;
+  color: #999;
+  margin: 8px 0;
+  text-align: center;
+}
+
+a {
+  color: #fff;
+}
+
+b {
+  font-weight: 700;
+}
+
+#nav {
+  position: fixed;
+  bottom: 10px;
+  background-color: #e1e1e1;
+  width: 100px;
+  height: 44px;
+  border-radius: 7px;
+  margin: 0 auto;
+  left: 0px;
+  right: 0px;
+  border: 1px solid #999;
+  display: none;
+}
+
+#nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+#nav .n-updates, #nav .n-comments {
+  width: 50px;
+  height: 44px;
+  line-height: 44px;
+  text-align: center;
+}
+
+#nav .n-updates {
+  border-right: 1px solid #999;
+}
+
+#nav i {
+	color: #777;
+}
+
+#container {
+  display: block;
+  margin: 0 auto;
+  padding: 0 15px;
+  max-width: 550px;
+
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#date {
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+font-weight: 300;
+  overflow: hidden;
+  white-space:pre;
+height: 19px;
+display: inline-block;
+vertical-align: middle;
+position: relative;
+left: 10px;
+top:5px;
+}
+
+#date::before {
+
+  position: relative;
+top: 0px;
+  -webkit-transition: all 1s ease;
+font-family: "Roboto Slab", fontawesome;
+}
+
+/*
+#date:hover::before {
+	top: -21px
+}
+*/
+
+.module {
+
+}
+
+.module .details {
+  margin: 0 0;  
+  padding: 0 0 20px 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 300
+}
+
+
+ul.details {          
+  padding: 0 0 0 20px;
+}
+
+.image-giant	{
+	display: block;
+}
+
+ul.details li.card {
+    margin: 0 0 15px 0;
+	padding: 0 0 30px;
+    list-style: none;
+    border-bottom: 2px dotted #D6D6D6;
+    border-radius: 3px;
+/* text-indent: -8px; */
+}
+
+ul.details li.card .card-content {
+padding: 0 15px;
+}
+
+ul.details li.card .card-content.standard {
+	display: flex;
+}
+
+ul.details li.card .meta {
+	font-size: 10px;
+text-transform: uppercase;
+margin: 5px 0 0 0;
+position: relative;
+padding: 0 15px;
+color: #888;
+border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+ul.details li.card .meta .timestamp {
+	display: inline-block;
+}
+
+ul.details li.card .meta .source {
+	display: inline-block;
+}
+
+ul.details li.card .meta .source:before {
+	content: " • "
+
+}
+
+
+ul.details li.card .meta .comments-aff {
+	display: inline-block;
+	font-size: 14px;
+	margin: 0 0 0 5px;
+}
+
+ul.details li.summary {
+  flex:none;
+}
+
+ul.details .content-box ul {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+ul.details .content-box {
+  flex-grow: 1;
+}
+
+.card-content.standard .content-img {
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	margin: 15px 0 0 15px;
+	flex: none;
+	display: flex;
+	justify-content: center;
+}
+
+.card-content.standard .content-img img {
+	height: 70px;
+}
+
+.card-content.image-giant .content-img img {
+	width: 100%;
+}
+
+
+/*
+ul.details li:before {
+  content: "";
+  position:relative;
+  left: -15px;
+  background-color: #BAE0EF;
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  top: 50%;
+}
+*/
+
+.credits {
+  text-align: center;
+  margin: 30px auto;
+  max-width: 300px;
+}
+
+.credits h2 {
+  color: #fff;
+}
+
+.credits ul {
+  list-style: none;
+  padding: 0;
+}
+
+.credits li {
+  font-size:12px;
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+	<meta name="robots" content="noindex">
+  <meta name="viewport" content="user-scalable=no, width=device-width, minimum-scale=1, maximum-scale=1">
+  <title>ngux-pipeline</title>
+  <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:600,400,300,100' rel='stylesheet' type='text/css'>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/pipeline.css">
+
+</head>
+<body>
+  
+	<div id="site-header">
+		<h1>ngux-pipeline</h1>
+		<div class="site-nav">
+			<li>Dev Queue • </li>
+			<li>Blog • </li>
+			<li>Documentation</li>
+		</div>
+	</div>
+  
+  <div id="column-container">
+
+    <div class="column definition">
+      <h2><i class="fa fa-lightbulb-o"></i>Definition</h2>
+      
+	  <ul class="cards">
+	  
+		  <% for (var i=0; i<definition.length; i++){ %>
+	      
+			  <li class="card">
+		        <div class="title"><%- definition[i].title %></div>
+				<% if (definition[i].priority != "") { %>
+			        <div class="label <%- definition[i].priority %>"></div>
+					<div class="label <%- definition[i].statusSlug %>"></div>
+				<% } %>
+				<% if (Number.isInteger(parseInt(definition[i].size))) { %>
+		        	<div class="storypoints" data-storypoints="<%- definition[i].size %>"></div>
+				<% } %>
+		      </li>
+		  
+		  <% } %>
+		  
+	  </ul>
+   
+    </div>
+    
+    <div class="column backlog">
+      <h2><i class="fa fa-thumbs-o-up"></i>Backlog</h2>
+	  
+	  <ul class="cards">
+	  
+		  <% for (var i=0; i<backlog.length; i++){ %>
+	      
+			  <li class="card">
+		        <div class="title"><%- backlog[i].title %></div>				
+				<% if (backlog[i].priority != "") { %>
+			        <div class="label <%- backlog[i].priority %>"></div>
+					<div class="label <%- backlog[i].statusSlug %>"></div>
+				<% } %>
+				<% if (Number.isInteger(parseInt(backlog[i].size))) { %>
+		        	<div class="storypoints" data-storypoints="<%- backlog[i].size %>"></div>
+				<% } %>
+		      </li>
+		  
+		  <% } %>
+		  
+	  </ul>
+   
+    </div>
+    
+    
+    <div class="column inprogress">
+      <h2><i class="fa fa-spinner"></i>Development In Progress</h2>
+	  
+	  <ul class="cards">
+	  
+		  <% for (var i=0; i<inprogress.length; i++){ %>
+	      
+			  <li class="card">
+		        <div class="title"><%- inprogress[i].title %></div>
+				<% if (inprogress[i].priority != "") { %>
+			        <div class="label <%- inprogress[i].priority %>"></div>
+					<div class="label <%- inprogress[i].statusSlug %>"></div>
+				<% } %>
+				<% if (Number.isInteger(parseInt(inprogress[i].size))) { %>
+		        	<div class="storypoints" data-storypoints="<%- inprogress[i].size %>"></div>
+				<% } %>
+		      </li>
+		  
+		  <% } %>
+		  
+	  </ul>
+   
+    </div>
+    
+    <div class="column qat">
+      <h2><i class="fa fa-flask"></i>Testing</h2>
+	  
+	  <ul class="cards">
+	  
+		  <% for (var i=0; i<qat.length; i++){ %>
+	      
+			  <li class="card">
+		        <div class="title"><%- qat[i].title %></div>
+				<% if (qat[i].priority != "") { %>
+			        <div class="label <%- qat[i].priority %>"></div>
+					<div class="label <%- qat[i].statusSlug %>"></div>
+				<% } %>
+		      </li>
+		  
+		  <% } %>
+		  
+	  </ul>
+   
+    </div>
+    
+        <div class="column inproduction">
+      <h2><i class="fa fa-check"></i>In production</h2>
+	  
+	  <ul class="cards">
+	  
+		  <% for (var i=0; i<inproduction.length; i++){ %>
+	      
+			  <li class="card">
+		        <div class="title"><%- inproduction[i].title %></div>
+		      </li>
+		  
+		  <% } %>
+		  
+	  </ul>
+   
+    </div>
+    
+  </div>
+  
+
+
+</body>
+</html>
