@@ -31,70 +31,114 @@ var soxParams = {
   timeIdentifier: "START TIME"
 };
 
+var days = [
+      "Sunday", 
+      "Monday", 
+      "Tuesday", 
+      "Wednesday", 
+      "Thursday", 
+      "Friday", 
+      "Saturday"
+    ];  
+
 
 var obstaclesData;
 var currentWeather;
 var hasCurrentUpdate;
 
+	var now = moment();
+	var inOneDay = now.clone().add(1, "day");
+	var inTwoDays = now.clone().add(2, "day");
+	var inThreeDays = now.clone().add(3, "day");
+
+	var obstacles = {};
+
+
+
 function assembleObstacles() {
+
+	obstacles = {
+		today: {
+			dayName: days[now.day()],
+			dayNum: now.date(),
+			events: []
+		},
+		nextDays: {
+			inOneDay: {
+				dayName: days[inOneDay.day()],
+				dayNum: inOneDay.date(),
+				events: []
+			},
+			inTwoDays: {
+				dayName: days[inTwoDays.day()],
+				dayNum: inTwoDays.date(),
+				events: []
+			},
+			inThreeDays: {
+				dayName: days[inThreeDays.day()],
+				dayNum: inThreeDays.date(),
+				events: []
+			}
+		},
+		all: []
+	};
+
 	return new Promise(function(resolve,reject) {
-		var obstacles = {};
-		
+
 		
 		getRainStatus().then(function(data){
 			console.log('getrainstatus, then...');
-			obstacles["rain"] = {
+			obstacles.today.events.push({
 				occurence: data.rainStatus.rainToday,
 				description: data.rainStatus.rainTodayString(),
 				category: "weather",
-				type: "rain"
-			};
+				type: "rain",
+				classNames: "rain",
+				title: "Rain"
+			});
 			
+			assignToADay(data.weatherAlerts);
+
+			/*
 			underscore.each(data.weatherAlerts, function(weatherAlert,index){
-				obstacles["weather-alert" + " " + (index + 1)] = {
+				obstacles.today.events.push({
 					occurence: weatherAlert.alertNow,
 					description: weatherAlert.string,
 					category: "weather",
 					type: "weather-alert"
-				};
+				});
 			});
+			*/
+			
 			return getGameStatus(cubsParams)
 		}).catch(function(err){
 			console.log('getrainstatus Catch', err);
-			return getGameStatus(cubsParams);
+			return getGameStatus(cubsParams);	
 		}).then(function(data){
-			obstacles["cubs"] = {
-				occurence: data.gameToday,
-				description: data.gameTodayString,
-				category: "game",
-				type: "cubs"
-			}
+			
+			assignToADay(data);
+			
 			return getGameStatus(soxParams)
+			
 		}).then(function(data) {
-			obstacles["sox"] = {
-				occurence: data.gameToday,
-				description: data.gameTodayString,
-				category: "game",
-				type: "sox"
-			}
+			console.log("BLASDS");
+			assignToADay(data);
+			
+
+
 			return getCtaStatus()
+			
 		}).then(function(data){
 			
-			console.log(data);
-			
-			underscore.each(data, function(alert,index){
-				obstacles[alert.impactedService + (index + 1)] = {
-					occurence: true,
-					description: alert.description,
-					category: "transit",
-					type: alert.impactedService
-				}
-			});
+			assignToADay(data);
 			
 			return getGoogleSheet()
 			
 		}).then(function(data){
 			
+			assignToADay(data);
+
+			/*
 			underscore.each(data, function(customUpdate,index){
 				obstacles[customUpdate.title + (index + 1)] = {
 					occurence: customUpdate.isCurrent,
@@ -105,6 +149,7 @@ function assembleObstacles() {
 					icon:  "&#x" + customUpdate.icon
 				}
 			});
+			*/
 			
 			//Determine if there are NO current updates
 			hasCurrentUpdate = false;
@@ -140,35 +185,35 @@ function getGoogleSheet() {
 			
 			underscore.each(row_data, function(row_json, index) {
 				
-				var customUpdate = {					
-					title: row_json.title,
-					description: row_json.description,
-					icon: row_json.icon,
-					startDate: row_json.startdate,
-					endDate: row_json.enddate,
-					severity: row_json.severity,
-					source: row_json.source,
-					slug: convertToSlug_withDate(row_json.title),
-					isCurrent: false
-				};
-				
-				console.log(customUpdate.slug);
-				
-				var startDate = moment(customUpdate.startDate, "DD/MM/YYYY HH:mm:ss")
-				var endDate = moment(customUpdate.endDate, "DD/MM/YYYY HH:mm:ss")
-				var now = moment();
-				
-				if (now.isSame(startDate, "date") || now.isBetween(startDate, endDate)) {
-					customUpdate["isCurrent"] = true
-				}
+				var startDate = moment(row_json.startdate, "YYYY-MM-DD HH:mm:ss")
+				var endDate = moment(row_json.enddate, "YYYY-MM-DD HH:mm:ss")				
+				status = determineEventStatus(startDate, endDate, 3);
 
-				//customUpdate["status"] = determineEventStatus(startDate, endDate, 5);
+				console.log(endDate);
 				
-				customUpdates.push(customUpdate);
+				if (status && status.inDisplayWindow == true) {
+				
+					var customUpdate = {					
+						title: row_json.title,
+						description: row_json.description,
+						icon: "&#x" + row_json.icon,
+						start: startDate,
+						end: endDate,
+						severity: row_json.severity,
+						source: row_json.source,
+						slug: convertToSlug_withDate(row_json.title, startDate),
+						status: status.type,
+						inDisplayWindow: status.inDisplayWindow
+					};
+
+					customUpdate["classNames"] = "custom-update " + customUpdate.slug; 
+					
+					customUpdates.push(customUpdate);				
+				}
 
 			});
 			
-			console.log(customUpdates);
+			console.log("google-sheet", customUpdates);
 				
 			resolve(customUpdates);
 		
@@ -189,31 +234,37 @@ function getCtaStatus() {
 				//moment().add(4, "days");
 	
 				underscore.each(ctaStatus, function(alert, index) {
+
 		
-					if (parseInt(alert.SeverityScore[0]) > 35) {
-			
+					if (parseInt(alert.SeverityScore[0]) > 15) {
+
 						var alertStart = moment(alert.EventStart[0], "YYYYMMDD HH:mm");
 						var alertEnd = moment(alert.EventEnd[0], "YYYYMMDD HH:mm");
-						
-						var timeStatus = determineEventStatus(alertStart, alertEnd, 2);
-						console.log(timeStatus);
+
+						var status = determineEventStatus(alertStart, alertEnd, 2);
+
 						//If the CTA alert occurs anytime on the present day
 						//if (now.isSame(alertStart, "date") || now.isBetween(alertStart, alertEnd)) {
-						if (timeStatus && timeStatus.inDisplayWindow == true) {
-						
+						if (status && status.inDisplayWindow == true) {
+													
 							//Iterate through each impacted service (e.g. RedLine) and store it
-							var impactedServices = [];
+							//var impactedServices = [];
 							
 							//Add an object for this alert to the majorAlerts array				
-							majorAlerts.push({
-								headline: alert.Headline[0],
+							var majorAlert = {
+								title: alert.Headline[0],
 								description: alert.ShortDescription[0],
-								start: alert.EventStart[0],
-								end: alert.EventEnd[0],
-								impactedService: convertToSlug(alert.ImpactedService[0].Service[0].ServiceName[0]),
-								inDisplayWindow: timeStatus.inDisplayWindow,
-								timeStatus: timeStatus.type	
-							});
+								start: alertStart,
+								end: alertEnd,
+								//impactedService: convertToSlug(alert.ImpactedService[0].Service[0].ServiceName[0]),
+								inDisplayWindow: status.inDisplayWindow,
+								status: status.type,
+								slug: convertToSlug_withDate(alert.Headline[0], alertStart)
+							};
+
+							majorAlert["classNames"] = "cta transit " + majorAlert.slug;
+
+							majorAlerts.push(majorAlert);
 							
 							/*
 							//If an alert has multiple impact routes, create a new object for each impacted
@@ -259,36 +310,13 @@ function getCtaStatus() {
 function getGameStatus(teamParams) {
 	return new Promise(function(resolve,reject) {
 		doRequest(teamParams.schedule, "json").then(function(data){
-			var days = [
-			          "Sunday", 
-			          "Monday", 
-			          "Tuesday", 
-			          "Wednesday", 
-			          "Thursday", 
-			          "Friday", 
-			          "Saturday"
-			        ];  
         
 	        //Set the current day
 	        var today = moment();
 	        //("05/29/16 3:00pm", "MM/DD/YY h:mma");    
-
-
-	        //Store data for today's game and/or upcoming games
-	        var gameStatus = {
-	          gameToday: false,
-	          gameTodayString: "",
-	          nextGames: []
-	        };
 			
 			var games = [];
 			
-			var statusStrings = {
-				today: "TBD-Today",
-				recent: "TBD-Recent",
-				future: "TBD-Future" 
-			};
-
 
 	        //Iterate through each game in the schedule
 	        underscore.each(data, function(value, index) {    
@@ -304,72 +332,43 @@ function getGameStatus(teamParams) {
 	          var gameDate = moment(gameDatePretty, "MM/DD/YY hh:mm A");
 			  
 			  //Create a Moment 5 hours after a game's start time
-			  var gameEnd = gameDate.clone().add(5, "hour");
+			  var gameEnd = gameDate.clone().add(5, "hours");
  
-  
-	          //Determine if there's a game today AND up to 5 hours after it starts, and store it
-	          if (today.isSame(gameDate, "date") && 
-		  		  today.isBefore(gameEnd)) {
-	            gameStatus.gameToday = true;
-	            var gameTime = gameDate.format("h:mma");
-	            gameStatus.gameTodayString = 
-	              gameTime + " game in Chicago today"
-	          }
-  
-  
-	          //Determine if there are games in the next 3 days and store them
-	          if (gameDate.isAfter(today, "date") &&
-	              gameDate.diff(today, 'days') <= 3) {
-	            gameStatus.nextGames.push(gameDatePretty);
-	          } 
 			  
 			  var status = determineEventStatus(gameDate, gameEnd, 3);
 			  
-			  if (status.inDisplayWindow == true) {
-				  
+			  if (status && status.inDisplayWindow == true) {
+
 				var game = {
 			  		inDisplayWindow: status.inDisplayWindow,
-					eventStatus: status.type,
-					startDate: gameDate.format("MM/DD/YY hhmma"),
-					endDate: gameEnd.format("MM/DD/YY hhmma"),
-					classNames: "game " + teamParams.name.toLowerCase()
+					status: status.type,
+					start: gameDate,
+					end: gameEnd,
+					title: teamParams.name,
+					slug: convertToSlug_withDate(teamParams.name, gameDate)
 				};
+
+				game["classNames"] = "game " + teamParams.name.toLowerCase() + " " + game.slug;
 				
 				if (status.type === "current" || status.type === "later") {
-					game["statusString"] = statusStrings.today;
+					game["description"] = gameDate.format("h:mma") + " game today in Chicago";
 				}
 				
 				else if (status.type === "recent") {
-					game["statusString"] = statusStrings.recent;
+					game["description"] = gameDate.format("h:mma") + " game today in Chicago";
 				}
 				
 				else if (status.type === "future") {
-					game["statusString"] = statusStrings.future;
+					game["description"] = gameDate.format("h:mma") + " in Chicago";
 				}
 				  
-				games.push(game)
+				games.push(game);
 				
 			  }
-  
 
 	        });
-
-
-	        //Determine when the next game is
-	        if (gameStatus.gameToday == false && gameStatus.nextGames.length > 0) {	
-	          var nextGame = moment(gameStatus.nextGames[0], "MM/DD/YY hh:mma");
-	          gameStatus.gameTodayString =
-	            "No game in Chicago today but they are playing on "
-	            + days[nextGame.day()]
-	            + " at "
-	            + nextGame.format("h:mm A");
-	        }
 			
-			console.log(games);
-
-			console.log(gameStatus);
-			
-	        resolve(gameStatus);
+	        resolve(games);
 		});
 	});
 }
@@ -458,19 +457,30 @@ function getRainStatus() {
 				if (typeof forecast.alerts !== "undefined") {
 				
 					underscore.each(forecast.alerts, function(alert, index) {
-						weatherAlerts.push({
-							string: alert.title + ". Starts at " + moment(alert.time * 1000).format("h:mma on M/D")
-								    + " and is expected to end at " + moment(alert.expires * 1000).format("h:mma on M/D"),
-							alertNow: true
-						})
+
+						var startDate = moment(alert.time * 1000);
+						var endDate = moment(alert.expires * 1000);
+						var status = determineEventStatus(startDate, endDate, 3);
+
+						if (status && status.inDisplayWindow == true) {
+
+							weatherAlerts.push({
+								string: alert.title + ". Starts at " + startDate.format("h:mma on M/D")
+									    + " and is expected to end at " + endDate.format("h:mma on M/D"),
+								alertNow: true,
+								inDisplayWindow: status.inDisplayWindow,
+								status: status.type,
+								start: startDate,
+								end: endDate,
+								slug: convertToSlug_withDate(alert.title, startDate),
+								title: alert.title,
+								description: "Starts at " + startDate.format("h:mma on M/D")
+									    + " and is expected to end at " + endDate.format("h:mma on M/D")
+							});
+
+						}
+
 					});
-				}
-			
-				else {
-					weatherAlerts.push({
-						string: "",
-						alertNow: false
-					})
 				}
 			
 			
@@ -517,13 +527,12 @@ function convertToSlug(Text) {
         ;
 }
 
-function convertToSlug_withDate(Text) {	
-	return Text
-        .toLowerCase()
-        .replace(/[^\w ]+/g,'')
-		.replace(/ +/g,'-') 
-		+ moment().format("MMDDYY-HHmmSSSS");
-        ;
+function convertToSlug_withDate(Text, Date) {	
+	var t = Text.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-');
+	var d = Date.format("-MMDDYY-HHmm");
+
+	return t + d;
+
 }
 
 function determineEventStatus(startDate, endDate, futureThreshold) {
@@ -588,12 +597,42 @@ function determineEventStatus(startDate, endDate, futureThreshold) {
       
 }
 
+function assignToADay(data) {
+
+	console.log("assignToADay-1", data.start, obstacles.nextDays.inOneDay);
+
+	underscore.each(data, function(data,index) {
+
+		obstacles.all.push(data);
+
+		if (data.status === "current" || data.status === "later") {
+			obstacles.today.events.push(data);
+		}
+	
+		else if (data.start.isSame(inOneDay, "day")) {
+			obstacles.nextDays.inOneDay.events.push(data);
+		}
+
+		else if (data.start.isSame(inTwoDays, "day")) {
+			obstacles.nextDays.inTwoDays.events.push(data);
+		}
+	
+		else if (data.start.isSame(inThreeDays, "day")) {
+			obstacles.nextDays.inThreeDays.events.push(data);
+		}
+
+	});
+
+	console.log("assignToADay-2", data.start, obstacles.nextDays.inOneDay);
+
+}
+
 
 function obstaclesInterval() {
 	assembleObstacles().then(function(data){
 		obstaclesData = data.obstacles;
 		hasCurrentUpdate = data.hasCurrentUpdate;
-		console.log("Requesting C1 data...");
+		console.log("Requesting C1 data...", obstaclesData);
 		setTimeout(obstaclesInterval, 600000);
 	});	
 }
@@ -603,7 +642,8 @@ obstaclesInterval();
 
 router.get('/', function(req, res, next) {
 	console.log("hello", obstaclesData);
-	res.render('c1alpha', {
+	console.log("today", obstaclesData.today.events);
+	res.render('c1alpha2', {
 		obstacles: obstaclesData,
 		currentWeather: currentWeather,
 		hasCurrentUpdate: hasCurrentUpdate

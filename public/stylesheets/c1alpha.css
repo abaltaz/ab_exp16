@@ -18,7 +18,7 @@ body {
 }
 
 .content-wrapper {
-	margin-bottom: -150px;
+	margin-bottom: -230px;
 	min-height: 100%;
 }
 
@@ -91,16 +91,23 @@ b {
 
 .updates li {
   font-size: 18px;
-  margin: 15px 0 50px;
 }
 
 
 
-.updates li:before {
+.updates li:after {
+  content: "//";
+  display: block;
+  margin: 25px auto 25px;
+  color: #e4e4e4;
 }
 
 .updates li {
   color: #666
+}
+
+.updates li:before {
+
 }
 
 .updates .icon {
@@ -111,7 +118,8 @@ b {
 
 
 .updates .title {
-  margin: 0 0 0px 0;
+  margin: 0 0 5px 0;
+  font-size: 22px;
 }
 
 .updates .msg {
@@ -139,18 +147,10 @@ b {
   font-size: 40px;
 }
 
-.rain .title:before {
-  content: "Rain";
-}
-
 .cubs .icon:before {
   content: "a";
   font-family: C1;
   font-size: 35px;
-}
-
-.cubs .title:before {
-  content: "Cubs";
 }
 
 
@@ -159,11 +159,6 @@ b {
   font-weight: 600
 
 }
-
-.sox .title:before {
-  content: "Sox";
-}
-
 
 .transit .icon:before {
     content: "b";
@@ -203,28 +198,87 @@ b {
 	font-size: 36px;
 }
 
+.next-days {
+    max-width: 400px;
+    width: 90%;
+    display: block;
+    margin: 10px auto 10px;
+    padding: 10px 20px;
+    background-color: #eee;
+    border-radius: 4px;
+    color: #555;
+}
+
+
+.next-days h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin: 0 0 7px;
+      display: inline-block;
+}
+
+.next-days h2:before {
+  content: attr(data-date-num);
+  border-left: 1px solid #999;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+  border-top: 3px solid #999;
+  width: 17px;
+  height: 17px;
+  margin: 0 5px 0 0;
+  font-family: helvetica;
+  font-size: 10px;
+  text-align: center;
+  color: #555;
+  display: inline-block;
+  position: relative;
+  top: -2px;
+  line-height: 15px;
+}
+
+.next-days ul {
+    padding-left: 20px;
+    font-size: 14px;
+}
+
+.next-days ul li {
+  margin: 5px 0;
+}
+
 
 .push-footers {
-	height: 150px;
+	height: 230px;
 }
 
 .hide-button {
     display: block;
-    margin: 0 auto;
-    width: 200px;
-    height: 50px;
-    border: 1px solid #ccc;
-	color: #777;
-    font-size: 14px;
-    padding: 5px 20px;
+    margin: 50px auto 0;
+    width: 80px;
+	  color: #94ACCC;
     text-align: center;
-    border-radius: 3px;
 }
 
-.hide-button:before {
-	content: "Hide categories you don't need";
-	text-align: center;
+.hide-button .icon {
+    display: block;
+    margin: 0 auto;
 }
+
+.hide-button .icon:before {
+  content: "\f05e";
+  font-family: FontAwesome;
+  font-size: 40px;
+}
+
+
+.hide-button .label:before {
+  display: block;
+	content: "Hide categories you don't need";
+  font-size: 10px;
+  line-height: 12px;
+  margin: 5px auto;
+}
+
 
 .footer {
   font-family: Open Sans;

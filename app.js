@@ -12,7 +12,9 @@ var pipeline = require('./routes/pipeline');
 //var pipelineblog = require('./routes/pipelineblog');
 var users = require('./routes/users');
 var ejstest = require('./routes/ejstest');
-var c1alpha = require('./routes/c1alpha');
+//var c1alpha = require('./routes/c1alpha');
+var c1alpha2 = require('./routes/c1alpha2');
+var mlbSchedule = require('./routes/mlbSchedule');
 
 var app = express();
 
@@ -35,7 +37,8 @@ app.use('/users', users);
 app.use('/ejstest', ejstest);
 app.use('/updates', updates);
 app.use('/pipeline', pipeline);
-app.use('/c1alpha', c1alpha);
+//app.use('/c1alpha', c1alpha);
+app.use('/c1alpha2', c1alpha2);
 //app.use('/pipeline-blog', pipelineblog);
 
 
