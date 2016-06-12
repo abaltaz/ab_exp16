@@ -46,7 +46,7 @@ h1 span {
 }
 
 .current-weather {
-  font-size: 12px;
+  font-size: 13px;
   color: #999;
 }
 
@@ -64,13 +64,19 @@ b {
 }
 
 .all-clear i {
-  font-size: 60px;
+  font-size: 50px;
   color: green;
   margin: 0 0 10px;
 }
 
+.all-clear .title {
+  margin-bottom: 5px;
+  font-size: 18px;
+  font-weight: 400;
+}
+
 .all-clear .details {
-  font-size: 24px;
+  font-size: 16px;
   color: #666;
 }
 
@@ -127,7 +133,7 @@ b {
 .updates .title {
   margin: 0 0 15px 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   max-width: 300px;
 }
 
@@ -173,9 +179,8 @@ b {
 
 
 .sox .icon:before {
-  content: "face";
-  font-family: 'Material Icons';
-  font-weight: 600;
+  content: "S";
+  font-weight: 800;
   font-size: 20px;
   display: block;
 }

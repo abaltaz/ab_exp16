@@ -81,7 +81,8 @@ function assembleObstacles() {
 			}
 		},
 		all: [],
-		allClear: false
+		allClear: false,
+		numString: ""
 	};
 
 	return new Promise(function(resolve,reject) {
@@ -165,6 +166,19 @@ function assembleObstacles() {
 					hasCurrentUpdate = true;
 				}
 			}
+
+			if (obstacles.today.events.length === 1) {
+				obstacles.numString = "(1 obstacle)"
+			}
+
+			else if (obstacles.today.events.length > 1) {
+				obstacles.numString = "(" + obstacles.today.events.length + " obstacles)"
+			}
+
+			else {
+				obstacles.numString = obstacles.today.events.length + "(Smooth sailing)"
+			}
+
 			
 			resolve({
 				obstacles: obstacles,
@@ -213,7 +227,9 @@ function getGoogleSheet() {
 						inDisplayWindow: status.inDisplayWindow
 					};
 
-					customUpdate["classNames"] = "custom-update " + customUpdate.slug; 
+					customUpdate["classNames"] = "custom-update " + customUpdate.slug;
+
+					if (row_json.morelink !== "") { customUpdate["moreLink"] = row_json.morelink }
 					
 					customUpdates.push(customUpdate);				
 				}
@@ -243,7 +259,7 @@ function getCtaStatus() {
 				underscore.each(ctaStatus, function(alert, index) {
 
 		
-					if (parseInt(alert.SeverityScore[0]) > 35) {
+					if (parseInt(alert.SeverityScore[0]) > 15) {
 
 						var alertStart = moment(alert.EventStart[0], "YYYYMMDD HH:mm");
 						var alertEnd = moment(alert.EventEnd[0], "YYYYMMDD HH:mm");
@@ -351,22 +367,22 @@ function getGameStatus(teamParams) {
 					status: status.type,
 					start: gameDate,
 					end: gameEnd,
-					title: teamParams.name,
+					title: teamParams.name + " game in Chicago",
 					slug: convertToSlug_withDate(teamParams.name, gameDate)
 				};
 
 				game["classNames"] = "game " + teamParams.name.toLowerCase() + " " + game.slug;
 				
 				if (status.type === "current" || status.type === "later") {
-					game["description"] = gameDate.format("h:mm A") + " game today in Chicago";
+					game["description"] = "Starts at " + gameDate.format("h:mm A");
 				}
 				
 				else if (status.type === "recent") {
-					game["description"] = gameDate.format("h:mm A") + " game today in Chicago";
+					game["description"] = "Starts at " + gameDate.format("h:mm A");
 				}
 				
 				else if (status.type === "future") {
-					game["description"] = gameDate.format("h:mm A") + " in Chicago";
+					game["title"] = "Sox at home, starts at " + gameDate.format("h:mm A");
 				}
 				  
 				games.push(game);
@@ -467,31 +483,34 @@ function getRainStatus() {
 				
 					underscore.each(forecast.alerts, function(alert, index) {
 
-						var startDate = moment(alert.time * 1000);
-						var endDate = moment(alert.expires * 1000);
-						var status = determineEventStatus(startDate, endDate, 3);
+						if (alert.title.indexOf("statement") === -1 && alert.title.indexOf("Statement") === -1) {
 
-						if (status && status.inDisplayWindow == true) {
+							var startDate = moment(alert.time * 1000);
+							var endDate = moment(alert.expires * 1000);
+							var status = determineEventStatus(startDate, endDate, 3);
 
-							var alert = {
-									string: alert.title + ". Starts at " + startDate.format("h:mm A on M/D")
-										    + " and is expected to end at " + endDate.format("h:mm A on M/D"),
-									alertNow: true,
-									inDisplayWindow: status.inDisplayWindow,
-									status: status.type,
-									start: startDate,
-									end: endDate,
-									slug: convertToSlug_withDate(alert.title, startDate),
-									title: alert.title,
-									description: "Starts at " + startDate.format("h:mm A on MMMM D")
-										    + " and is expected to end at " + endDate.format("h:mm A on MMMM D"),
-									moreLink: alert.uri
-								};
+							if (status && status.inDisplayWindow == true) {
 
-							alert["classNames"] = "weather-alert " + alert.slug;
+								var alert = {
+										string: alert.title + ". Starts at " + startDate.format("h:mm A on M/D")
+											    + " and is expected to end at " + endDate.format("h:mm A on M/D"),
+										alertNow: true,
+										inDisplayWindow: status.inDisplayWindow,
+										status: status.type,
+										start: startDate,
+										end: endDate,
+										slug: convertToSlug_withDate(alert.title, startDate),
+										title: alert.title,
+										description: "Starts at " + startDate.format("h:mm A on MMMM D")
+											    + " and is expected to end at " + endDate.format("h:mm A on MMMM D"),
+										moreLink: alert.uri
+									};
 
-							weatherAlerts.push(alert);	
+								alert["classNames"] = "weather-alert " + alert.slug;
 
+								weatherAlerts.push(alert);	
+
+							}
 						}
 
 					});
