@@ -80,7 +80,8 @@ function assembleObstacles() {
 				events: []
 			}
 		},
-		all: []
+		all: [],
+		allClear: false
 	};
 
 	return new Promise(function(resolve,reject) {
@@ -88,16 +89,22 @@ function assembleObstacles() {
 		
 		getRainStatus().then(function(data){
 			console.log('getrainstatus, then...');
-			obstacles.today.events.push({
-				occurence: data.rainStatus.rainToday,
-				description: data.rainStatus.rainTodayString(),
-				category: "weather",
-				type: "rain",
-				classNames: "rain",
-				title: "Rain"
-			});
+
+			if (data.rainStatus.rainToday) {
+
+				obstacles.today.events.push({
+					occurence: data.rainStatus.rainToday,
+					description: data.rainStatus.rainTodayString(),
+					category: "weather",
+					type: "rain",
+					classNames: "rain",
+					title: "Rain"
+				});
 			
+			}
+
 			assignToADay(data.weatherAlerts);
+			assignToADay(data.dailyForecast);
 
 			/*
 			underscore.each(data.weatherAlerts, function(weatherAlert,index){
@@ -236,7 +243,7 @@ function getCtaStatus() {
 				underscore.each(ctaStatus, function(alert, index) {
 
 		
-					if (parseInt(alert.SeverityScore[0]) > 15) {
+					if (parseInt(alert.SeverityScore[0]) > 35) {
 
 						var alertStart = moment(alert.EventStart[0], "YYYYMMDD HH:mm");
 						var alertEnd = moment(alert.EventEnd[0], "YYYYMMDD HH:mm");
@@ -351,15 +358,15 @@ function getGameStatus(teamParams) {
 				game["classNames"] = "game " + teamParams.name.toLowerCase() + " " + game.slug;
 				
 				if (status.type === "current" || status.type === "later") {
-					game["description"] = gameDate.format("h:mma") + " game today in Chicago";
+					game["description"] = gameDate.format("h:mm A") + " game today in Chicago";
 				}
 				
 				else if (status.type === "recent") {
-					game["description"] = gameDate.format("h:mma") + " game today in Chicago";
+					game["description"] = gameDate.format("h:mm A") + " game today in Chicago";
 				}
 				
 				else if (status.type === "future") {
-					game["description"] = gameDate.format("h:mma") + " in Chicago";
+					game["description"] = gameDate.format("h:mm A") + " in Chicago";
 				}
 				  
 				games.push(game);
@@ -450,6 +457,8 @@ function getRainStatus() {
 		          }
           
 		        });
+
+
         	
 				//Get Weather Alerts
 				var weatherAlerts = [];
@@ -464,29 +473,65 @@ function getRainStatus() {
 
 						if (status && status.inDisplayWindow == true) {
 
-							weatherAlerts.push({
-								string: alert.title + ". Starts at " + startDate.format("h:mma on M/D")
-									    + " and is expected to end at " + endDate.format("h:mma on M/D"),
-								alertNow: true,
-								inDisplayWindow: status.inDisplayWindow,
-								status: status.type,
-								start: startDate,
-								end: endDate,
-								slug: convertToSlug_withDate(alert.title, startDate),
-								title: alert.title,
-								description: "Starts at " + startDate.format("h:mma on M/D")
-									    + " and is expected to end at " + endDate.format("h:mma on M/D")
-							});
+							var alert = {
+									string: alert.title + ". Starts at " + startDate.format("h:mm A on M/D")
+										    + " and is expected to end at " + endDate.format("h:mm A on M/D"),
+									alertNow: true,
+									inDisplayWindow: status.inDisplayWindow,
+									status: status.type,
+									start: startDate,
+									end: endDate,
+									slug: convertToSlug_withDate(alert.title, startDate),
+									title: alert.title,
+									description: "Starts at " + startDate.format("h:mm A on MMMM D")
+										    + " and is expected to end at " + endDate.format("h:mm A on MMMM D"),
+									moreLink: alert.uri
+								};
+
+							alert["classNames"] = "weather-alert " + alert.slug;
+
+							weatherAlerts.push(alert);	
 
 						}
 
 					});
 				}
 			
+
+				//Get Daily Forecast
+
+				var dailyForecast = [];
+
+				underscore.each(forecast.daily.data, function(day, index) {
+				
+
+					var startDate = moment(day.time * 1000);
+
+					var status = determineEventStatus(startDate, startDate, 3);
+
+					var thisForecast = {
+						inDisplayWindow: status.inDisplayWindow,
+						status: status.type,
+						start: startDate,
+						end: startDate,
+						slug: convertToSlug_withDate("forecast", startDate),
+						title: day.summary
+								 + " High " + Math.round(day.temperatureMax) + "°"
+					};
+
+					thisForecast["classNames"] = "forecast " + thisForecast.slug;
+
+					dailyForecast.push(thisForecast);
+
+				});
+
+				//Remove today's forecast because it's not currently needed
+				dailyForecast.splice(0,1);
 			
 		        resolve({
 					rainStatus: rainStatus,
-					weatherAlerts: weatherAlerts
+					weatherAlerts: weatherAlerts,
+					dailyForecast: dailyForecast
 				});
 			
 			}

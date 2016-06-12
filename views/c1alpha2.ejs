@@ -3,6 +3,7 @@
 	<head>
 	<link href='/stylesheets/c1alpha.css' rel='stylesheet' type='text/css'>
 	<link href='/font-awesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,100' rel='stylesheet' type='text/css'>
 	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,700,100' rel='stylesheet' type='text/css'>
 	<link href="https://file.myfontastic.com/S97T5t2MDqypaprsr3vpQ4/icons.css" rel="stylesheet">
@@ -19,7 +20,7 @@
 	<div class="content-wrapper">
 
 	  <div class="header">
-	    <h1>c1</h1>
+	    <h1>chicago <span>1</span></h1>
 	    <div class="current-weather"><%= currentWeather %></div>
 	  </div>
 
@@ -41,7 +42,16 @@
 	  		<li class="update <%= obstacles.today.events[i].classNames %>">
 	  			<div class="icon" data-icons="<%- obstacles.today.events[i].icon %>"></div>
 		  		<div class="title"><%= obstacles.today.events[i].title %></div>
-		  		<div class="msg"><%= obstacles.today.events[i].description %></div>	
+		  		<div class="msg"><%= obstacles.today.events[i].description %></div>
+
+		  		<% if (typeof obstacles.today.events[i].moreLink != "undefined") { %>
+
+					<div class="more">
+						<a href="<%= obstacles.today.events[i].moreLink %>" target="_blank">More</a>
+					</div>
+
+		  		<% } %>
+
 	  		</li>
 
 			
@@ -63,7 +73,7 @@
 
 			  	<% for (var i=0; i < obstacles.nextDays[day].events.length; i++ ) { %>
 
-			  		<li><%= obstacles.nextDays[day].events[i].title %></li>
+			  		<li><%- obstacles.nextDays[day].events[i].title %></li>
 
 			  	<% } %>
 
@@ -85,9 +95,10 @@
 	</div>
 
 	<div class="footer">
-	<div class="about">
-	  <strong>Chicago 1</strong> is a feed of things in Chicago that slow you down, whether it's rain, a Cubs game or a train delay.
-	</div>
+		<div class="about">
+		  <strong>Chicago 1</strong> is a feed of things in Chicago that slow you down, whether it's rain, a Cubs game or a train delay.
+		</div>
+		<div class="close-btn"></div>
 	</div>
 
 	<div class="modal">
@@ -108,19 +119,23 @@
 	<script>
 
 
-	var allClearPhrases = [
-	"How nice",
-	"All good",
-	"A-OK",
-	"No worries"
-	];
+		var allClearPhrases = [
+		"How nice",
+		"All good",
+		"A-OK",
+		"No worries"
+		];
 
-	function randomIntFromInterval(min,max)
-	{
-	    return Math.floor(Math.random()*(max-min+1)+min);
-	}
+		function randomIntFromInterval(min,max)
+		{
+		    return Math.floor(Math.random()*(max-min+1)+min);
+		}
 
-	$(".all-clear .title").html(allClearPhrases[randomIntFromInterval(0,3)])
+		$(".all-clear .title").html(allClearPhrases[randomIntFromInterval(0,3)])
+
+		$(".footer .close-btn").on("click", function(){
+			$(".footer").remove();
+		})
 
 
 	</script>
