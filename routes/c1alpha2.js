@@ -47,9 +47,9 @@ var currentWeather;
 var hasCurrentUpdate;
 
 	var now = moment();
-	var inOneDay = now.clone().add(1, "day");
-	var inTwoDays = now.clone().add(2, "day");
-	var inThreeDays = now.clone().add(3, "day");
+	var inOneDay = now.clone().add(1, "day").hour(0);
+	var inTwoDays = now.clone().add(2, "day").hour(0);
+	var inThreeDays = now.clone().add(3, "day").hour(0);
 
 	var obstacles = {};
 
@@ -95,11 +95,11 @@ function assembleObstacles() {
 
 				obstacles.today.events.push({
 					occurence: data.rainStatus.rainToday,
-					description: data.rainStatus.rainTodayString(),
+					title: data.rainStatus.rainTodayString(),
 					category: "weather",
 					type: "rain",
 					classNames: "rain",
-					title: "Rain"
+					description: data.rainStatus.rainTodayTitle
 				});
 			
 			}
@@ -140,9 +140,19 @@ function assembleObstacles() {
 			
 			assignToADay(data);
 			
+			return getTraffic()
+			
+		}).then(function(data){
+			
+			console.log("obt1", data);
+
+			assignToADay(data);
+			
 			return getGoogleSheet()
 			
 		}).then(function(data){
+
+			console.log("GS", data);
 			
 			assignToADay(data);
 
@@ -259,7 +269,7 @@ function getCtaStatus() {
 				underscore.each(ctaStatus, function(alert, index) {
 
 		
-					if (parseInt(alert.SeverityScore[0]) > 15) {
+					if (parseInt(alert.SeverityScore[0]) > 35) {
 
 						var alertStart = moment(alert.EventStart[0], "YYYYMMDD HH:mm");
 						var alertEnd = moment(alert.EventEnd[0], "YYYYMMDD HH:mm");
@@ -373,7 +383,11 @@ function getGameStatus(teamParams) {
 
 				game["classNames"] = "game " + teamParams.name.toLowerCase() + " " + game.slug;
 				
-				if (status.type === "current" || status.type === "later") {
+				if (status.type === "current") {
+					game["description"] = "Started at " + gameDate.format("h:mm A");
+				}
+
+				if (status.type === "later") {
 					game["description"] = "Starts at " + gameDate.format("h:mm A");
 				}
 				
@@ -382,7 +396,7 @@ function getGameStatus(teamParams) {
 				}
 				
 				else if (status.type === "future") {
-					game["title"] = "Sox at home, starts at " + gameDate.format("h:mm A");
+					game["title"] = teamParams.name + " at home, starts at " + gameDate.format("MM/DD h:mm A");
 				}
 				  
 				games.push(game);
@@ -422,6 +436,7 @@ function getRainStatus() {
 		            }
 		            else return ""
 		          },
+		      	  rainTodayTitle: forecast.hourly.summary,	
 		          currentWeather: 
 		            Math.round(forecast.currently.temperature) + "° " 
 		            + forecast.currently.summary
@@ -559,6 +574,84 @@ function getRainStatus() {
 	});
 }
 
+var trafficRoutes = {
+	lsd_nb: {
+		name: "Lake Shore Drive Northbound",
+		endpoint: "http://www.travelmidwest.com/lmiga/travelTime.json?path=GATEWAY.IL.LAKESHORE.LAKE%20SHORE%20DRIVE%20NB"
+	},
+	lsd_sb: {
+		name: "Lake Shore Drive Southbound",
+		endpoint: "http://www.travelmidwest.com/lmiga/travelTime.json?path=GATEWAY.IL.LAKESHORE.LAKE%20SHORE%20DRIVE%20SB"
+	}
+};
+
+
+function getTraffic() {
+
+	return new Promise(function(resolve,reject) {
+
+		var trafficAlerts=[];
+
+		//Iterate through each Traffic Route endpoint
+		underscore.each(trafficRoutes, function(route, index) {
+
+			//Make the request for each route
+			doRequest(route.endpoint, "json").then(function(road){
+
+				//Array containing html strings for each traffic alert item
+				var segmentAlertsHtml = [];
+
+				//Iterate through each road-segment object in the response from IDOT
+				underscore.each(road, function(roadSegment){
+
+					//Store an object as a string if the road is congested
+					if (roadSegment.level === "HEAVY_CONGESTION") {
+						segmentAlertsHtml.push("<li>" + roadSegment.from + " to " + roadSegment.to + "</li>");
+					}
+
+				});
+
+				if (segmentAlertsHtml.length > 0) {
+
+					console.log("SAH1", segmentAlertsHtml.toString());
+					var description = "Traffic in these areas: <ul>" + segmentAlertsHtml.join("") + "</ul>";
+					var startDate = moment();
+
+					var status = determineEventStatus(startDate, startDate, 1);
+
+					var alert = {
+						description: description,
+						title: route.name,
+						start: startDate,
+						end: startDate,
+						inDisplayWindow: status.inDisplayWindow,
+						status: status.type,
+						slug: convertToSlug_withDate(route.name, startDate)
+					};
+
+
+					
+					alert["classNames"] = "traffic " + alert.slug;
+
+					trafficAlerts.push(alert);
+				}
+
+			});
+
+		});
+
+		//Need to figure out how to structure this Promise without a setTimeout
+		setTimeout(function() {
+			console.log("TR16", trafficAlerts);
+			resolve(trafficAlerts);
+		},100);
+
+
+
+	});
+
+}
+
 
 function doRequest(endpoint, endpointFormat){
 	return new Promise(function(resolve,reject) {
@@ -663,31 +756,34 @@ function determineEventStatus(startDate, endDate, futureThreshold) {
 
 function assignToADay(data) {
 
-	console.log("assignToADay-1", data.start, obstacles.nextDays.inOneDay);
+	console.log("assignToADay-1", obstacles.nextDays.inOneDay);
 
-	underscore.each(data, function(data,index) {
+	underscore.each(data, function(event,index) {
 
-		obstacles.all.push(data);
+		obstacles.all.push(event);
 
-		if (data.status === "current" || data.status === "later") {
-			obstacles.today.events.push(data);
+		if (event.status === "current" || event.status === "later") {
+			obstacles.today.events.push(event);
 		}
 	
-		else if (data.start.isSame(inOneDay, "day")) {
-			obstacles.nextDays.inOneDay.events.push(data);
+		if (inOneDay.isSame(event.start, "day") || 
+				 inOneDay.isBetween(event.start, event.end)) {
+			obstacles.nextDays.inOneDay.events.push(event);
 		}
 
-		else if (data.start.isSame(inTwoDays, "day")) {
-			obstacles.nextDays.inTwoDays.events.push(data);
+		if (inTwoDays.isSame(event.start, "day") || 
+				 inTwoDays.isBetween(event.start, event.end)) {
+			obstacles.nextDays.inTwoDays.events.push(event);
 		}
 	
-		else if (data.start.isSame(inThreeDays, "day")) {
-			obstacles.nextDays.inThreeDays.events.push(data);
+		if (inThreeDays.isSame(event.start, "day") || 
+				 inThreeDays.isBetween(event.start, event.end)) {
+			obstacles.nextDays.inThreeDays.events.push(event);
 		}
 
 	});
 
-	console.log("assignToADay-2", data.start, obstacles.nextDays.inOneDay);
+	//console.log("assignToADay-2", data.start, obstacles.nextDays.inOneDay);
 
 }
 
